@@ -7,19 +7,19 @@ import (
 	"net/http"
 )
 
-//Get - make HTTP GET request to given url and return RawResult{}.
-func (a *API) Get(apiurl string) (RawResult, error) {
-	r, err := http.NewRequest(http.MethodGet, apiurl, nil)
-	if err != nil {
-		return RawResult{}, err
-	}
-	client := a.getClient()
-	resp, err := client.Do(r)
-	if err != nil {
-		return RawResult{}, err
-	}
-	return getRawResult(resp), nil
-}
+// //Get - make HTTP GET request to given url and return RawResult{}.
+// func (a *API) Get(apiurl string) (RawResult, error) {
+// 	r, err := http.NewRequest(http.MethodGet, apiurl, nil)
+// 	if err != nil {
+// 		return RawResult{}, err
+// 	}
+// 	client := a.getClient()
+// 	resp, err := client.Do(r)
+// 	if err != nil {
+// 		return RawResult{}, err
+// 	}
+// 	return getRawResult(resp), nil
+// }
 
 //APIGet - make HTTP GET request to given url and return RawResult{}.
 func (a *API) APIGet(apiurl string) (RawResult, error) {

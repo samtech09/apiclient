@@ -23,6 +23,7 @@ type ijwtapi interface {
 	InsecureSSLEnabled() bool
 	GetTimeout() time.Duration
 	GetToken() Token
+	GetBaseURL() string
 
 	getClient() *http.Client
 	logMsg(methodname, format string, msg ...interface{})
@@ -30,25 +31,27 @@ type ijwtapi interface {
 
 //JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
 type JwtAPI struct {
-	TokenRequestData TokenRequest
-	token            Token
-	TokenURI         string
-	RefreshTokenURI  string
-	AllowInsecureSSL bool
-	Timeout          time.Duration
-	Debug            bool
+	TokenRequestData   TokenRequest
+	token              Token
+	TokenURI           string
+	RefreshTokenURI    string
+	AllowInsecureSSL   bool
+	Timeout            time.Duration
+	Debug              bool
+	ResourceAPIBaseURL string
 }
 
 //SJwtAPI allow to maek calls to JWT protected Structured APIs by setting Access-Token in request Authorization header.
 //Called structured APIs are expected to return response as APIReuslt{}
 type SJwtAPI struct {
-	TokenRequestData TokenRequest
-	token            Token
-	TokenURI         string
-	RefreshTokenURI  string
-	AllowInsecureSSL bool
-	Timeout          time.Duration
-	Debug            bool
+	TokenRequestData   TokenRequest
+	token              Token
+	TokenURI           string
+	RefreshTokenURI    string
+	AllowInsecureSSL   bool
+	Timeout            time.Duration
+	Debug              bool
+	ResourceAPIBaseURL string
 }
 
 //Token is returned after successfull request to token or refreshtoken endpoints
@@ -94,6 +97,9 @@ func (j JwtAPI) InsecureSSLEnabled() bool {
 func (j JwtAPI) GetTimeout() time.Duration {
 	return j.Timeout
 }
+func (j JwtAPI) GetBaseURL() string {
+	return j.ResourceAPIBaseURL
+}
 func (j JwtAPI) getClient() *http.Client {
 	return getClient(j.InsecureSSLEnabled(), j.GetTimeout())
 }
@@ -125,6 +131,9 @@ func (sj SJwtAPI) InsecureSSLEnabled() bool {
 }
 func (sj SJwtAPI) GetTimeout() time.Duration {
 	return sj.Timeout
+}
+func (j SJwtAPI) GetBaseURL() string {
+	return j.ResourceAPIBaseURL
 }
 func (sj SJwtAPI) getClient() *http.Client {
 	return getClient(sj.InsecureSSLEnabled(), sj.GetTimeout())

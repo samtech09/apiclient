@@ -55,8 +55,9 @@ func TestInit(t *testing.T) {
 	go mockServer()
 }
 func TestAPIGet(t *testing.T) {
-	url := "http://localhost:8080/get"
+	url := "/get"
 	api := SAPI{AllowInsecureSSL: true}
+	api.ResourceAPIBaseURL = "http://localhost:8080"
 	res, err := api.Get(url)
 	if err != nil {
 		t.Errorf("APIGet error: %v\n", err)
@@ -69,6 +70,7 @@ func TestAPIGet(t *testing.T) {
 
 func TestGetToken(t *testing.T) {
 	jwtapi = &SJwtAPI{}
+	jwtapi.ResourceAPIBaseURL = "http://localhost:8080"
 	jwtapi.TokenURI = "http://localhost:8080/token"
 	jwtapi.RefreshTokenURI = "http://localhost:8080/refresh"
 	jwtapi.TokenRequestData.ClientID = "test0-client"
@@ -97,7 +99,7 @@ func TestRequestTokenByRefreshToken(t *testing.T) {
 }
 
 func TestProtectedWithJWT(t *testing.T) {
-	url := "http://localhost:8080/protected"
+	url := "/protected"
 	res, err := jwtapi.Get(url)
 	if err != nil {
 		t.Errorf("APIGet error: %v\n", err)

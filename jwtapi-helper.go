@@ -31,8 +31,13 @@ func (j *JwtAPI) RequestTokenByRefreshToken(rtoken string) (Token, error) {
 	return token, nil
 }
 
-//Get - call given apiurl with GET method, auto inject Authorization Header, returns RawResult{}.
-func (j *JwtAPI) Get(apiurl string) (RawResult, error) {
+//Get - make HTTP GET request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (j *JwtAPI) Get(apipath string) (RawResult, error) {
+	return j.GetURL(j.GetBaseURL() + apipath)
+}
+
+//GetURL - call given apiurl with GET method, auto inject Authorization Header, returns RawResult{}.
+func (j *JwtAPI) GetURL(apiurl string) (RawResult, error) {
 	var res RawResult
 	resp, err := makeRequest(j, http.MethodGet, apiurl, nil)
 	if err != nil {
@@ -45,8 +50,13 @@ func (j *JwtAPI) Get(apiurl string) (RawResult, error) {
 	return getRawResultJWT(resp)
 }
 
-//Post - call given apiurl with POST method and pass data, auto inject Authorization Header, returns RawResult{}.
-func (j *JwtAPI) Post(apiurl string, postdataJSON []byte) (RawResult, error) {
+//Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (j *JwtAPI) Post(apipath string, postdataJSON []byte) (RawResult, error) {
+	return j.PostURL(j.GetBaseURL()+apipath, postdataJSON)
+}
+
+//PostURL - call given apiurl with POST method and pass data, auto inject Authorization Header, returns RawResult{}.
+func (j *JwtAPI) PostURL(apiurl string, postdataJSON []byte) (RawResult, error) {
 	var res RawResult
 	if postdataJSON == nil {
 		return res, fmt.Errorf("postdata is nil")
@@ -63,8 +73,13 @@ func (j *JwtAPI) Post(apiurl string, postdataJSON []byte) (RawResult, error) {
 	return getRawResultJWT(resp)
 }
 
-//Put - call given apiurl with PUT method and pass data, auto inject Authorization Header, returns RawResult{}.
-func (j *JwtAPI) Put(apiurl string, putdataJSON []byte) (RawResult, error) {
+//Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (j *JwtAPI) Put(apipath string, putdataJSON []byte) (RawResult, error) {
+	return j.PutURL(j.GetBaseURL()+apipath, putdataJSON)
+}
+
+//PutURL - call given apiurl with PUT method and pass data, auto inject Authorization Header, returns RawResult{}.
+func (j *JwtAPI) PutURL(apiurl string, putdataJSON []byte) (RawResult, error) {
 	var res RawResult
 	if putdataJSON == nil {
 		return res, fmt.Errorf("putdata is nil")
@@ -81,8 +96,13 @@ func (j *JwtAPI) Put(apiurl string, putdataJSON []byte) (RawResult, error) {
 	return getRawResultJWT(resp)
 }
 
-//Delete - call given apiurl with DELETE method, auto inject Authorization Header, returns RawResult{}.
-func (j *JwtAPI) Delete(apiurl string) (RawResult, error) {
+//Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (j *JwtAPI) Delete(apipath string) (RawResult, error) {
+	return j.DeleteURL(j.GetBaseURL() + apipath)
+}
+
+//DeleteURL - call given apiurl with DELETE method, auto inject Authorization Header, returns RawResult{}.
+func (j *JwtAPI) DeleteURL(apiurl string) (RawResult, error) {
 	var res RawResult
 	resp, err := makeRequest(j, http.MethodGet, apiurl, nil)
 	if err != nil {
