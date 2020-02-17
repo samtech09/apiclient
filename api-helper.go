@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 // //Get - make HTTP GET request to given url and return RawResult{}.
@@ -50,6 +51,30 @@ func (a *API) APIPost(apiurl string, postdataJSON []byte) (RawResult, error) {
 		return res, err
 	}
 	r.Header.Set("Content-Type", "application/json")
+
+	client := a.getClient()
+	resp, err := client.Do(r)
+	if err != nil {
+		return res, err
+	}
+
+	return getRawResult(resp), nil
+}
+
+//APIPostForm - make HTTP POST request to given url with content-type: application/x-www-form-urlencoded
+func (a *API) APIPostForm(apiurl string, data map[string]string) (RawResult, error) {
+	var res RawResult
+
+	udata := url.Values{}
+	for k, v := range data {
+		udata.Set(k, v)
+	}
+
+	r, err := http.NewRequest(http.MethodPost, apiurl, bytes.NewBufferString(udata.Encode()))
+	if err != nil {
+		return res, err
+	}
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	client := a.getClient()
 	resp, err := client.Do(r)
