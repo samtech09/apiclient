@@ -68,6 +68,30 @@ func TestAPIGet(t *testing.T) {
 	}
 }
 
+// func TestAPIPostForm(t *testing.T) {
+// 	url := "https://api.secure.ebs.in/api/1_0/statusByRef"
+// 	api := API{AllowInsecureSSL: true}
+// 	api.ResourceAPIBaseURL = "https://api.secure.ebs.in/api/1_0"
+
+// 	data := make(map[string]string)
+// 	data["Action"] = "statusByRef"
+// 	data["AccountID"] = "1111"
+// 	data["SecretKey"] = "asasasasasasas"
+// 	data["RefNo"] = "1212121212"
+
+// 	res, err := api.APIPostForm(url, data)
+// 	if err != nil {
+// 		t.Errorf("APIPostForm error: %v\n", err)
+// 	}
+
+// 	fmt.Println("PostForm: ", res)
+
+// 	exp := "<output"
+// 	if !strings.Contains(res.Data, exp) {
+// 		t.Errorf("Expected: %s,  Got: %s", exp, res.Data)
+// 	}
+// }
+
 func TestGetToken(t *testing.T) {
 	jwtapi = &SJwtAPI{}
 	jwtapi.ResourceAPIBaseURL = "http://localhost:8080"
