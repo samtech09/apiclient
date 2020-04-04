@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -27,6 +28,7 @@ type ijwtapi interface {
 
 	getClient() *http.Client
 	logMsg(methodname, format string, msg ...interface{})
+	logDebug(methodname, format string, msg ...interface{})
 }
 
 //JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
@@ -39,6 +41,7 @@ type JwtAPI struct {
 	Timeout            time.Duration
 	Debug              bool
 	ResourceAPIBaseURL string
+	logger             *log.Logger
 }
 
 //SJwtAPI allow to maek calls to JWT protected Structured APIs by setting Access-Token in request Authorization header.
@@ -52,6 +55,7 @@ type SJwtAPI struct {
 	Timeout            time.Duration
 	Debug              bool
 	ResourceAPIBaseURL string
+	logger             *log.Logger
 }
 
 //Token is returned after successfull request to token or refreshtoken endpoints
@@ -100,11 +104,29 @@ func (j JwtAPI) GetTimeout() time.Duration {
 func (j JwtAPI) GetBaseURL() string {
 	return j.ResourceAPIBaseURL
 }
+func (j JwtAPI) SetLogWriter(w io.Writer) {
+	multi := io.MultiWriter(w, os.Stdout)
+	l := log.New(multi, "", log.LstdFlags)
+	l.Println("Log output set to StdOut and writer both")
+	j.logger = l
+}
 func (j JwtAPI) getClient() *http.Client {
 	return getClient(j.InsecureSSLEnabled(), j.GetTimeout())
 }
 func (j JwtAPI) logMsg(methodname, format string, msg ...interface{}) {
-	logMsg(j.DebugEnabled(), methodname, format, msg...)
+	if j.logger == nil {
+		j.logger = log.New(os.Stdout, "", log.LstdFlags)
+	}
+	j.logger.Printf("INFO: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+}
+func (j JwtAPI) logDebug(methodname, format string, msg ...interface{}) {
+	if j.logger == nil {
+		j.logger = log.New(os.Stdout, "", log.LstdFlags)
+	}
+	if j.DebugEnabled() {
+		return
+	}
+	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 }
 
 //
@@ -132,14 +154,32 @@ func (sj SJwtAPI) InsecureSSLEnabled() bool {
 func (sj SJwtAPI) GetTimeout() time.Duration {
 	return sj.Timeout
 }
-func (j SJwtAPI) GetBaseURL() string {
-	return j.ResourceAPIBaseURL
+func (sj SJwtAPI) GetBaseURL() string {
+	return sj.ResourceAPIBaseURL
 }
 func (sj SJwtAPI) getClient() *http.Client {
 	return getClient(sj.InsecureSSLEnabled(), sj.GetTimeout())
 }
+func (sj SJwtAPI) SetLogWriter(w io.Writer) {
+	multi := io.MultiWriter(w, os.Stdout)
+	l := log.New(multi, "", log.LstdFlags)
+	l.Println("Log output set to StdOut and writer both")
+	sj.logger = l
+}
 func (sj SJwtAPI) logMsg(methodname, format string, msg ...interface{}) {
-	logMsg(sj.DebugEnabled(), methodname, format, msg...)
+	if sj.logger == nil {
+		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
+	}
+	sj.logger.Printf("INFO: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+}
+func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
+	if sj.logger == nil {
+		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
+	}
+	if sj.DebugEnabled() {
+		return
+	}
+	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 }
 
 func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
@@ -162,12 +202,12 @@ func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
 	return client
 }
 
-func logMsg(debug bool, methodname, format string, msg ...interface{}) {
-	if !debug {
-		return
-	}
-	log.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
-}
+// func logMsg(debug bool, methodname, format string, msg ...interface{}) {
+// 	if !debug {
+// 		return
+// 	}
+// 	log.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+// }
 
 func requestTokenByLogin(j ijwtapi) (Token, error) {
 	var token Token
@@ -186,7 +226,7 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 	resp, err := client.Do(r)
 	if err != nil {
 		if resp != nil {
-			j.logMsg("RequestTokenByLogin", "failed to get new token by login (%d): %v", resp.StatusCode, err)
+			j.logDebug("RequestTokenByLogin", "failed to get new token by login (%d): %v", resp.StatusCode, err)
 			resp.Body.Close()
 			return token, fmt.Errorf("failed to get new token by login (%d): %v", resp.StatusCode, err)
 		}
@@ -201,7 +241,7 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 		if err == nil {
 			respStr = string(responseData)
 		}
-		j.logMsg("RequestTokenByLogin", "failed to get new token[2] by login (%d): %v\n", resp.StatusCode, err)
+		j.logDebug("RequestTokenByLogin", "failed to get new token[2] by login (%d): %v\n", resp.StatusCode, err)
 		return token, fmt.Errorf("failed to get new token by login (%d): %s", resp.StatusCode, respStr)
 	}
 
@@ -232,7 +272,7 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 	resp, err := client.Do(r)
 	if err != nil {
 		if resp != nil {
-			j.logMsg("RequestTokenByRefreshToken", "failed to get new token by refreshtoken (%d): %v\n", resp.StatusCode, err)
+			j.logDebug("RequestTokenByRefreshToken", "failed to get new token by refreshtoken (%d): %v\n", resp.StatusCode, err)
 			resp.Body.Close()
 			return token, fmt.Errorf("failed to get new token by refreshtoken (%d): %v", resp.StatusCode, err)
 		}
@@ -281,7 +321,7 @@ func makeRequest(j ijwtapi, method, apiurl string, body io.Reader) (*http.Respon
 	}
 
 callapi:
-	j.logMsg("makeRequest", "Retry[%d], API: %s\n\tBody: %s", retry, apiurl, buf)
+	j.logDebug("makeRequest", "Retry[%d], API: %s\n\tBody: %s", retry, apiurl, buf)
 
 	r, err := http.NewRequest(method, apiurl, bytes.NewReader(buf))
 	if err != nil {
@@ -315,6 +355,8 @@ callapi:
 		// 	log.Printf("\tRetried API, got error: %s\n", tmpres.ErrText)
 		// }
 		// //DEBUG end
+
+		j.logDebug("makerequest", "Retrying API, got status: %d", resp.StatusCode)
 
 		if (retry < maxRetry) && (resp.StatusCode == http.StatusUnauthorized) {
 			resp.Body.Close()
