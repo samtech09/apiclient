@@ -29,6 +29,7 @@ type ijwtapi interface {
 	getClient() *http.Client
 	logMsg(methodname, format string, msg ...interface{})
 	logDebug(methodname, format string, msg ...interface{})
+	setToken(Token)
 }
 
 //JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
@@ -128,6 +129,9 @@ func (j JwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 	}
 	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 }
+func (j JwtAPI) setToken(t Token) {
+	j.token = t
+}
 
 //
 // ---------------------
@@ -180,6 +184,9 @@ func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 		return
 	}
 	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+}
+func (sj SJwtAPI) setToken(t Token) {
+	sj.token = t
 }
 
 func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
@@ -250,6 +257,8 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 		return token, fmt.Errorf("failed to extract new token: %v", err)
 	}
 
+	j.setToken(token)
+
 	return token, nil
 }
 
@@ -306,6 +315,8 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 		j.logMsg("RequestTokenByRefreshToken", "Token unmarshal error: %v", err)
 		return token, err
 	}
+
+	j.setToken(token)
 
 	return token, nil
 }
