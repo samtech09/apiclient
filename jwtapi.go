@@ -124,7 +124,7 @@ func (j JwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 	if j.logger == nil {
 		j.logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
-	if j.DebugEnabled() {
+	if !j.DebugEnabled() {
 		return
 	}
 	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
@@ -180,7 +180,7 @@ func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 	if sj.logger == nil {
 		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
-	if sj.DebugEnabled() {
+	if !sj.DebugEnabled() {
 		return
 	}
 	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
@@ -265,7 +265,9 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 	var token Token
 
-	j.logMsg("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
+	//j.logMsg("RequestTokenByRefreshToken", "Debug : %s", j.DebugEnabled())
+
+	j.logDebug("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
 
 	u := refreshToken{RefreshToken: rtoken}
 	b := new(bytes.Buffer)
@@ -317,6 +319,9 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 	}
 
 	j.setToken(token)
+
+	j.logDebug("RequestTokenByRefreshToken", "New refresh-token is (%s)", token.RefreshToken)
+	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
 
 	return token, nil
 }

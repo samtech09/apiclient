@@ -71,7 +71,7 @@ func (j API) logDebug(methodname, format string, msg ...interface{}) {
 	if j.logger == nil {
 		j.logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
-	if j.DebugEnabled() {
+	if !j.DebugEnabled() {
 		return
 	}
 	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
@@ -109,7 +109,7 @@ func (j SAPI) logDebug(methodname, format string, msg ...interface{}) {
 	if j.logger == nil {
 		j.logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
-	if j.DebugEnabled() {
+	if !j.DebugEnabled() {
 		return
 	}
 	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))

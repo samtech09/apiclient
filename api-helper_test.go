@@ -100,6 +100,7 @@ func TestGetToken(t *testing.T) {
 	jwtapi.TokenRequestData.ClientID = "test0-client"
 	jwtapi.TokenRequestData.ClientSecret = "123456678ABCCD"
 	jwtapi.TokenRequestData.Scopes = "user"
+	jwtapi.Debug = true
 	token, err := jwtapi.RequestTokenByCred()
 	if err != nil {
 		t.Errorf("Get-Token error: %v\n", err)
