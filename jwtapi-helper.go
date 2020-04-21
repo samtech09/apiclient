@@ -3,9 +3,20 @@ package apiclient
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 )
+
+//SetLogWriter Sets io.writer for logging to file
+func (j *JwtAPI) SetLogWriter(w io.Writer) {
+	multi := io.MultiWriter(w, os.Stdout)
+	l := log.New(multi, "", log.LstdFlags)
+	l.Println("Log output set to StdOut and writer both")
+	j.logger = l
+}
 
 //RequestTokenByCred call Token endpoint to get new token by passing TokenRequest data.
 //It set token to JwtAPI instance for subsequent calls through same instance.

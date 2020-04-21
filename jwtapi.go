@@ -29,7 +29,7 @@ type ijwtapi interface {
 	getClient() *http.Client
 	logMsg(methodname, format string, msg ...interface{})
 	logDebug(methodname, format string, msg ...interface{})
-	setToken(Token)
+	//setToken(Token)
 }
 
 //JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
@@ -105,12 +105,7 @@ func (j JwtAPI) GetTimeout() time.Duration {
 func (j JwtAPI) GetBaseURL() string {
 	return j.ResourceAPIBaseURL
 }
-func (j JwtAPI) SetLogWriter(w io.Writer) {
-	multi := io.MultiWriter(w, os.Stdout)
-	l := log.New(multi, "", log.LstdFlags)
-	l.Println("Log output set to StdOut and writer both")
-	j.logger = l
-}
+
 func (j JwtAPI) getClient() *http.Client {
 	return getClient(j.InsecureSSLEnabled(), j.GetTimeout())
 }
@@ -129,9 +124,10 @@ func (j JwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 	}
 	j.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 }
-func (j JwtAPI) setToken(t Token) {
-	j.token = t
-}
+
+// func (j JwtAPI) setToken(t Token) {
+// 	j.token = t
+// }
 
 //
 // ---------------------
@@ -164,12 +160,7 @@ func (sj SJwtAPI) GetBaseURL() string {
 func (sj SJwtAPI) getClient() *http.Client {
 	return getClient(sj.InsecureSSLEnabled(), sj.GetTimeout())
 }
-func (sj SJwtAPI) SetLogWriter(w io.Writer) {
-	multi := io.MultiWriter(w, os.Stdout)
-	l := log.New(multi, "", log.LstdFlags)
-	l.Println("Log output set to StdOut and writer both")
-	sj.logger = l
-}
+
 func (sj SJwtAPI) logMsg(methodname, format string, msg ...interface{}) {
 	if sj.logger == nil {
 		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
@@ -185,9 +176,10 @@ func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 	}
 	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 }
-func (sj SJwtAPI) setToken(t Token) {
-	sj.token = t
-}
+
+// func (sj *SJwtAPI) setToken(t Token) {
+// 	sj.token = t
+// }
 
 func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
 	tr := &http.Transport{
@@ -257,7 +249,7 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 		return token, fmt.Errorf("failed to extract new token: %v", err)
 	}
 
-	j.setToken(token)
+	//j.setToken(token)
 
 	return token, nil
 }
@@ -265,9 +257,9 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 	var token Token
 
-	//j.logMsg("RequestTokenByRefreshToken", "Debug : %s", j.DebugEnabled())
+	j.logMsg("RequestTokenByRefreshToken", "Debug : %s", j.DebugEnabled())
 
-	j.logDebug("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
+	//j.logDebug("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
 
 	u := refreshToken{RefreshToken: rtoken}
 	b := new(bytes.Buffer)
@@ -318,7 +310,7 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 		return token, err
 	}
 
-	j.setToken(token)
+	//j.setToken(token)
 
 	j.logDebug("RequestTokenByRefreshToken", "New refresh-token is (%s)", token.RefreshToken)
 	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
