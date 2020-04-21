@@ -10,16 +10,18 @@ type APIResult struct {
 	HTTPStatus int
 	ErrCode    int
 	ErrText    string
+	//ErrValid tells if ErrCode and ErrText hold values from result from API or just defalut values
+	ErrValid bool
 	//Data hold resultant JSON as string
 	Data string //interface{}
 }
 
-//RawResult is unstructured response returned from any API, it could be JSON or String or other
-type RawResult struct {
-	HTTPStatus int
-	//Response is raw response received as result of calling API
-	Data string
-}
+// //RawResult is unstructured response returned from any API, it could be JSON or String or other
+// type RawResult struct {
+// 	HTTPStatus int
+// 	//Response is raw response received as result of calling API
+// 	Data string
+// }
 
 //toJSON convert given interface to JSON
 func toJSON(d interface{}) (*bytes.Buffer, error) {

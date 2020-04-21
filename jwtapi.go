@@ -16,21 +16,21 @@ import (
 
 var maxRetry = 2
 
-type ijwtapi interface {
-	GetTokenRequestData() TokenRequest
-	GetTokenURI() string
-	GetRefreshTokenURI() string
-	DebugEnabled() bool
-	InsecureSSLEnabled() bool
-	GetTimeout() time.Duration
-	GetToken() Token
-	GetBaseURL() string
+// type ijwtapi interface {
+// 	GetTokenRequestData() TokenRequest
+// 	GetTokenURI() string
+// 	GetRefreshTokenURI() string
+// 	DebugEnabled() bool
+// 	InsecureSSLEnabled() bool
+// 	GetTimeout() time.Duration
+// 	GetToken() Token
+// 	GetBaseURL() string
 
-	getClient() *http.Client
-	logMsg(methodname, format string, msg ...interface{})
-	logDebug(methodname, format string, msg ...interface{})
-	//setToken(Token)
-}
+// 	getClient() *http.Client
+// 	logMsg(methodname, format string, msg ...interface{})
+// 	logDebug(methodname, format string, msg ...interface{})
+// 	//setToken(Token)
+// }
 
 //JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
 type JwtAPI struct {
@@ -43,21 +43,22 @@ type JwtAPI struct {
 	Debug              bool
 	ResourceAPIBaseURL string
 	logger             *log.Logger
+	StructuredResponse bool
 }
 
-//SJwtAPI allow to maek calls to JWT protected Structured APIs by setting Access-Token in request Authorization header.
-//Called structured APIs are expected to return response as APIReuslt{}
-type SJwtAPI struct {
-	TokenRequestData   TokenRequest
-	token              Token
-	TokenURI           string
-	RefreshTokenURI    string
-	AllowInsecureSSL   bool
-	Timeout            time.Duration
-	Debug              bool
-	ResourceAPIBaseURL string
-	logger             *log.Logger
-}
+// //SJwtAPI allow to maek calls to JWT protected Structured APIs by setting Access-Token in request Authorization header.
+// //Called structured APIs are expected to return response as APIReuslt{}
+// type SJwtAPI struct {
+// 	TokenRequestData   TokenRequest
+// 	token              Token
+// 	TokenURI           string
+// 	RefreshTokenURI    string
+// 	AllowInsecureSSL   bool
+// 	Timeout            time.Duration
+// 	Debug              bool
+// 	ResourceAPIBaseURL string
+// 	logger             *log.Logger
+// }
 
 //Token is returned after successfull request to token or refreshtoken endpoints
 type Token struct {
@@ -133,53 +134,53 @@ func (j JwtAPI) logDebug(methodname, format string, msg ...interface{}) {
 // ---------------------
 //
 
-func (sj SJwtAPI) GetTokenRequestData() TokenRequest {
-	return sj.TokenRequestData
-}
-func (sj SJwtAPI) GetTokenURI() string {
-	return sj.TokenURI
-}
-func (sj SJwtAPI) GetRefreshTokenURI() string {
-	return sj.RefreshTokenURI
-}
-func (sj SJwtAPI) DebugEnabled() bool {
-	return sj.Debug
-}
-func (sj SJwtAPI) GetToken() Token {
-	return sj.token
-}
-func (sj SJwtAPI) InsecureSSLEnabled() bool {
-	return sj.AllowInsecureSSL
-}
-func (sj SJwtAPI) GetTimeout() time.Duration {
-	return sj.Timeout
-}
-func (sj SJwtAPI) GetBaseURL() string {
-	return sj.ResourceAPIBaseURL
-}
-func (sj SJwtAPI) getClient() *http.Client {
-	return getClient(sj.InsecureSSLEnabled(), sj.GetTimeout())
-}
-
-func (sj SJwtAPI) logMsg(methodname, format string, msg ...interface{}) {
-	if sj.logger == nil {
-		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
-	}
-	sj.logger.Printf("INFO: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
-}
-func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
-	if sj.logger == nil {
-		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
-	}
-	if !sj.DebugEnabled() {
-		return
-	}
-	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
-}
-
-// func (sj *SJwtAPI) setToken(t Token) {
-// 	sj.token = t
+// func (sj SJwtAPI) GetTokenRequestData() TokenRequest {
+// 	return sj.TokenRequestData
 // }
+// func (sj SJwtAPI) GetTokenURI() string {
+// 	return sj.TokenURI
+// }
+// func (sj SJwtAPI) GetRefreshTokenURI() string {
+// 	return sj.RefreshTokenURI
+// }
+// func (sj SJwtAPI) DebugEnabled() bool {
+// 	return sj.Debug
+// }
+// func (sj SJwtAPI) GetToken() Token {
+// 	return sj.token
+// }
+// func (sj SJwtAPI) InsecureSSLEnabled() bool {
+// 	return sj.AllowInsecureSSL
+// }
+// func (sj SJwtAPI) GetTimeout() time.Duration {
+// 	return sj.Timeout
+// }
+// func (sj SJwtAPI) GetBaseURL() string {
+// 	return sj.ResourceAPIBaseURL
+// }
+// func (sj SJwtAPI) getClient() *http.Client {
+// 	return getClient(sj.InsecureSSLEnabled(), sj.GetTimeout())
+// }
+
+// func (sj SJwtAPI) logMsg(methodname, format string, msg ...interface{}) {
+// 	if sj.logger == nil {
+// 		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
+// 	}
+// 	sj.logger.Printf("INFO: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+// }
+// func (sj SJwtAPI) logDebug(methodname, format string, msg ...interface{}) {
+// 	if sj.logger == nil {
+// 		sj.logger = log.New(os.Stdout, "", log.LstdFlags)
+// 	}
+// 	if !sj.DebugEnabled() {
+// 		return
+// 	}
+// 	sj.logger.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
+// }
+
+// // func (sj *SJwtAPI) setToken(t Token) {
+// // 	sj.token = t
+// // }
 
 func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
 	tr := &http.Transport{
@@ -208,7 +209,7 @@ func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
 // 	log.Printf("DEBUG: [%s] [%s]\n", methodname, fmt.Sprintf(format, msg...))
 // }
 
-func requestTokenByLogin(j ijwtapi) (Token, error) {
+func (j *JwtAPI) requestTokenByLogin() error {
 	var token Token
 
 	j.logMsg("RequestTokenByLogin", "%s", "Requesting new token through login")
@@ -217,7 +218,7 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 
 	r, err := http.NewRequest(http.MethodPost, j.GetTokenURI(), b)
 	if err != nil {
-		return token, err
+		return err
 	}
 	r.Header.Set("Content-Type", "application/json")
 
@@ -227,10 +228,10 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 		if resp != nil {
 			j.logDebug("RequestTokenByLogin", "failed to get new token by login (%d): %v", resp.StatusCode, err)
 			resp.Body.Close()
-			return token, fmt.Errorf("failed to get new token by login (%d): %v", resp.StatusCode, err)
+			return fmt.Errorf("failed to get new token by login (%d): %v", resp.StatusCode, err)
 		}
 		j.logMsg("RequestTokenByLogin", "failed to get new token by login: %v\n", err)
-		return token, fmt.Errorf("failed to get new token by login: %v", err)
+		return fmt.Errorf("failed to get new token by login: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -241,23 +242,24 @@ func requestTokenByLogin(j ijwtapi) (Token, error) {
 			respStr = string(responseData)
 		}
 		j.logDebug("RequestTokenByLogin", "failed to get new token[2] by login (%d): %v\n", resp.StatusCode, err)
-		return token, fmt.Errorf("failed to get new token by login (%d): %s", resp.StatusCode, respStr)
+		return fmt.Errorf("failed to get new token by login (%d): %s", resp.StatusCode, respStr)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&token)
 	if err != nil {
-		return token, fmt.Errorf("failed to extract new token: %v", err)
+		return fmt.Errorf("failed to extract new token: %v", err)
 	}
 
 	//j.setToken(token)
+	j.token = token
 
-	return token, nil
+	return nil
 }
 
-func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
+func (j *JwtAPI) requestTokenByRefreshToken(rtoken string) error {
 	var token Token
 
-	j.logMsg("RequestTokenByRefreshToken", "Debug : %s", j.DebugEnabled())
+	j.logMsg("RequestTokenByRefreshToken", "Debug : %t", j.DebugEnabled())
 
 	//j.logDebug("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
 
@@ -267,7 +269,7 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 
 	r, err := http.NewRequest(http.MethodPost, j.GetRefreshTokenURI(), b)
 	if err != nil {
-		return token, err
+		return err
 	}
 	r.Header.Set("Content-Type", "application/json")
 
@@ -277,10 +279,10 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 		if resp != nil {
 			j.logDebug("RequestTokenByRefreshToken", "failed to get new token by refreshtoken (%d): %v\n", resp.StatusCode, err)
 			resp.Body.Close()
-			return token, fmt.Errorf("failed to get new token by refreshtoken (%d): %v", resp.StatusCode, err)
+			return fmt.Errorf("failed to get new token by refreshtoken (%d): %v", resp.StatusCode, err)
 		}
 		j.logMsg("RequestTokenByRefreshToken", "failed to get new token by refreshtoken: %v\n", err)
-		return token, fmt.Errorf("failed to get new token by refreshtoken: %v", err)
+		return fmt.Errorf("failed to get new token by refreshtoken: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -301,25 +303,25 @@ func requestTokenByRefreshToken(j ijwtapi, rtoken string) (Token, error) {
 
 		// Possibly refresh-token expired or there is scope mismatch
 		//   Try to get a fresh AccessToken by login
-		return requestTokenByLogin(j)
+		return j.requestTokenByLogin()
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&token)
 	if err != nil {
 		j.logMsg("RequestTokenByRefreshToken", "Token unmarshal error: %v", err)
-		return token, err
+		return err
 	}
 
 	//j.setToken(token)
+	j.token = token
 
 	j.logDebug("RequestTokenByRefreshToken", "New refresh-token is (%s)", token.RefreshToken)
-	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
 
-	return token, nil
+	return nil
 }
 
 //makeRequest makes http request for given url with given method
-func makeRequest(j ijwtapi, method, apiurl string, body io.Reader) (*http.Response, error) {
+func (j *JwtAPI) makeRequest(method, apiurl string, body io.Reader) (*http.Response, error) {
 	retry := 0
 	connFailRetry := 0
 	//Create []byte buffer from body - so it can be passed in further retries
@@ -370,10 +372,35 @@ callapi:
 			resp.Body.Close()
 
 			retry++
-			requestTokenByRefreshToken(j, j.GetToken().RefreshToken)
+			j.requestTokenByRefreshToken(j.GetToken().RefreshToken)
 			// again try to call same API
 			goto callapi
 		}
 	}
 	return resp, nil
+}
+
+//handleNotOK tried to read response from responses other than 200
+// and populate ApiResult struct
+func handleNotOK(resp *http.Response) APIResult {
+	res := APIResult{}
+	res.HTTPStatus = resp.StatusCode
+	res.ErrCode = 1
+
+	responseData, err := ioutil.ReadAll(resp.Body)
+	strResp := string(responseData)
+
+	// try to decode response to APIResult (if it has)
+	if strings.Contains(strResp, "ErrText") {
+		tmpres := APIResult{}
+		err = jsonStringToStruct(strResp, &tmpres)
+		if err == nil {
+			return tmpres
+		}
+	}
+
+	if err == nil {
+		res.ErrText = strResp
+	}
+	return res
 }

@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var jwtapi *SJwtAPI
+var jwtapi *JwtAPI
 var token Token
 
 var wg sync.WaitGroup
@@ -56,7 +56,7 @@ func TestInit(t *testing.T) {
 }
 func TestAPIGet(t *testing.T) {
 	url := "/get"
-	api := SAPI{AllowInsecureSSL: true}
+	api := API{AllowInsecureSSL: true, StructuredResponse: true}
 	api.ResourceAPIBaseURL = "http://localhost:8080"
 	res, err := api.Get(url)
 	if err != nil {
@@ -93,14 +93,14 @@ func TestAPIGet(t *testing.T) {
 // }
 
 func TestGetToken(t *testing.T) {
-	jwtapi = &SJwtAPI{}
+	jwtapi = &JwtAPI{StructuredResponse: true}
 	jwtapi.ResourceAPIBaseURL = "http://localhost:8080"
 	jwtapi.TokenURI = "http://localhost:8080/token"
 	jwtapi.RefreshTokenURI = "http://localhost:8080/refresh"
 	jwtapi.TokenRequestData.ClientID = "test0-client"
 	jwtapi.TokenRequestData.ClientSecret = "123456678ABCCD"
 	jwtapi.TokenRequestData.Scopes = "user"
-	jwtapi.Debug = true
+	//jwtapi.Debug = true
 	token, err := jwtapi.RequestTokenByCred()
 	if err != nil {
 		t.Errorf("Get-Token error: %v\n", err)

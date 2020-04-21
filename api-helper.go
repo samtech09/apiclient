@@ -2,14 +2,18 @@ package apiclient
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // //Get - make HTTP GET request to given url and return RawResult{}.
-// func (a *API) Get(apiurl string) (RawResult, error) {
+// func (a *API) Get(apiurl string) (APIResult error) {
 // 	r, err := http.NewRequest(http.MethodGet, apiurl, nil)
 // 	if err != nil {
 // 		return RawResult{}, err
@@ -22,9 +26,22 @@ import (
 // 	return getRawResult(resp), nil
 // }
 
-//APIGet - make HTTP GET request to given url and return RawResult{}.
-func (a *API) APIGet(apiurl string) (RawResult, error) {
-	var res RawResult
+//SetLogWriter Sets io.writer for logging to file
+func (a *API) SetLogWriter(w io.Writer) {
+	multi := io.MultiWriter(w, os.Stdout)
+	l := log.New(multi, "", log.LstdFlags)
+	l.Println("Log output set to StdOut and writer both")
+	a.logger = l
+}
+
+//Get - make HTTP GET request to given api path and return RawResult{}.
+func (a *API) Get(apipath string) (APIResult, error) {
+	return a.GetURL(a.GetBaseURL() + apipath)
+}
+
+//GetURL - make HTTP GET request to given url and return RawResult{}.
+func (a *API) GetURL(apiurl string) (APIResult, error) {
+	var res APIResult
 	r, err := http.NewRequest(http.MethodGet, apiurl, nil)
 	if err != nil {
 		return res, err
@@ -35,12 +52,20 @@ func (a *API) APIGet(apiurl string) (RawResult, error) {
 		return res, err
 	}
 
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
 	return getRawResult(resp), nil
 }
 
-//APIPost - make HTTP POST request to given url and post JSON data and return RawResult{}.
-func (a *API) APIPost(apiurl string, postdataJSON []byte) (RawResult, error) {
-	var res RawResult
+//Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (a *API) Post(apipath string, postdataJSON []byte) (APIResult, error) {
+	return a.PostURL(a.GetBaseURL()+apipath, postdataJSON)
+}
+
+//PostURL - make HTTP POST request to given url and post JSON data and return RawResult{}.
+func (a *API) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
+	var res APIResult
 	if postdataJSON == nil {
 		a.logMsg("APIPost", "postdata is nil")
 		return res, fmt.Errorf("postdata is nil")
@@ -58,12 +83,15 @@ func (a *API) APIPost(apiurl string, postdataJSON []byte) (RawResult, error) {
 		return res, err
 	}
 
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
 	return getRawResult(resp), nil
 }
 
-//APIPostForm - make HTTP POST request to given url with content-type: application/x-www-form-urlencoded
-func (a *API) APIPostForm(apiurl string, data map[string]string) (RawResult, error) {
-	var res RawResult
+//PostForm - make HTTP POST request to given url with content-type: application/x-www-form-urlencoded
+func (a *API) PostForm(apiurl string, data map[string]string) (APIResult, error) {
+	var res APIResult
 
 	udata := url.Values{}
 	for k, v := range data {
@@ -82,12 +110,20 @@ func (a *API) APIPostForm(apiurl string, data map[string]string) (RawResult, err
 		return res, err
 	}
 
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
 	return getRawResult(resp), nil
 }
 
-//APIPut - make HTTP PUT request to given url and post JSON data and return RawResult{}.
-func (a *API) APIPut(apiurl string, putdataJSON []byte) (RawResult, error) {
-	var res RawResult
+//Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (a *API) Put(apipath string, putdataJSON []byte) (APIResult, error) {
+	return a.PutURL(a.GetBaseURL()+apipath, putdataJSON)
+}
+
+//PutURL - make HTTP PUT request to given url and post JSON data and return RawResult{}.
+func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
+	var res APIResult
 	if putdataJSON == nil {
 		a.logMsg("APIPut", "putdata is nil")
 		return res, fmt.Errorf("putdata is nil")
@@ -105,12 +141,20 @@ func (a *API) APIPut(apiurl string, putdataJSON []byte) (RawResult, error) {
 		return res, err
 	}
 
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
 	return getRawResult(resp), nil
 }
 
-//APIDelete - make HTTP DELETE request to given url and return RawResult{}.
-func (a *API) APIDelete(apiurl string) (RawResult, error) {
-	var res RawResult
+//Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (a *API) Delete(apipath string) (APIResult, error) {
+	return a.DeleteURL(a.GetBaseURL() + apipath)
+}
+
+//DeleteURL - make HTTP DELETE request to given url and return RawResult{}.
+func (a *API) DeleteURL(apiurl string) (APIResult, error) {
+	var res APIResult
 	r, err := http.NewRequest(http.MethodDelete, apiurl, nil)
 	if err != nil {
 		return res, err
@@ -121,12 +165,15 @@ func (a *API) APIDelete(apiurl string) (RawResult, error) {
 		return res, err
 	}
 
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
 	return getRawResult(resp), nil
 }
 
-func getRawResult(resp *http.Response) RawResult {
+func getRawResult(resp *http.Response) APIResult {
 	defer resp.Body.Close()
-	res := RawResult{}
+	res := APIResult{}
 	res.HTTPStatus = resp.StatusCode
 	resbody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -134,5 +181,14 @@ func getRawResult(resp *http.Response) RawResult {
 	} else {
 		res.Data = string(resbody)
 	}
+	res.ErrValid = false
 	return res
+}
+
+func getAPIResult(resp *http.Response) (APIResult, error) {
+	defer resp.Body.Close()
+	res := APIResult{}
+	json.NewDecoder(resp.Body).Decode(&res)
+	res.ErrValid = true
+	return res, nil
 }
