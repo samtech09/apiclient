@@ -29,6 +29,7 @@ func (j *SJwtAPI) RequestTokenByCred() (Token, error) {
 	}
 	//Save token for later use
 	j.token = token
+	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
 	return token, nil
 }
 
@@ -41,6 +42,7 @@ func (j *SJwtAPI) RequestTokenByRefreshToken(rtoken string) (Token, error) {
 	}
 	//Save token for later use
 	j.token = token
+	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
 	return token, nil
 }
 
