@@ -26,7 +26,7 @@ func (j *JwtAPI) RequestTokenByCred() (Token, error) {
 	if err != nil {
 		return Token{}, err
 	}
-	j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
+	//j.logDebug("RequestTokenByRefreshToken", "API Object's refresh-token is (%s)", j.GetToken().RefreshToken)
 	return j.GetToken(), nil
 }
 

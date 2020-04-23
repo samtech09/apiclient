@@ -315,7 +315,7 @@ func (j *JwtAPI) requestTokenByRefreshToken(rtoken string) error {
 	//j.setToken(token)
 	j.token = token
 
-	j.logDebug("RequestTokenByRefreshToken", "New refresh-token is (%s)", token.RefreshToken)
+	//j.logDebug("RequestTokenByRefreshToken", "New refresh-token is (%s)", token.RefreshToken)
 
 	return nil
 }
