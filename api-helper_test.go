@@ -68,6 +68,20 @@ func TestAPIGet(t *testing.T) {
 	}
 }
 
+func TestAPIGetBasicAuth(t *testing.T) {
+	url := "/orders/order_FgP6jhvCOWM1Hk/payments"
+	api := API{AllowInsecureSSL: true, StructuredResponse: false, UseBasicAuth: true, BasicAuthUser: "rzp_test_ZlzD0ybRfBYmC5", BasicAuthPwd: "vicl3kdxVRmMaMj1w4qmsFNL"}
+	api.ResourceAPIBaseURL = "https://api.razorpay.com/v1"
+	res, err := api.Get(url)
+	if err != nil {
+		t.Errorf("APIGet error: %v\n", err)
+	}
+	exp := "get-ok"
+	if res.Data != exp {
+		t.Errorf("Expected: %s,  Got: %s", exp, res.Data)
+	}
+}
+
 // func TestAPIPostForm(t *testing.T) {
 // 	url := "https://api.secure.ebs.in/api/1_0/statusByRef"
 // 	api := API{AllowInsecureSSL: true}

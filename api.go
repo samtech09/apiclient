@@ -28,6 +28,9 @@ type API struct {
 	ResourceAPIBaseURL string
 	logger             *log.Logger
 	StructuredResponse bool
+	BasicAuthUser      string
+	BasicAuthPwd       string
+	UseBasicAuth       bool
 }
 
 // //SAPI - allow to make calls to Structured APIs using GET, POST, PUT, DELETE methods which itself return response as APIReuslt{}

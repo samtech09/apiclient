@@ -46,6 +46,10 @@ func (a *API) GetURL(apiurl string) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
+
 	client := a.getClient()
 	resp, err := client.Do(r)
 	if err != nil {
@@ -76,6 +80,9 @@ func (a *API) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
 		return res, err
 	}
 	r.Header.Set("Content-Type", "application/json")
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
 
 	client := a.getClient()
 	resp, err := client.Do(r)
@@ -103,6 +110,9 @@ func (a *API) PostForm(apiurl string, data map[string]string) (APIResult, error)
 		return res, err
 	}
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
 
 	client := a.getClient()
 	resp, err := client.Do(r)
@@ -134,6 +144,9 @@ func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 		return res, err
 	}
 	r.Header.Set("Content-Type", "application/json")
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
 
 	client := a.getClient()
 	resp, err := client.Do(r)
@@ -159,6 +172,10 @@ func (a *API) DeleteURL(apiurl string) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
+
 	client := a.getClient()
 	resp, err := client.Do(r)
 	if err != nil {
