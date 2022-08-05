@@ -46,6 +46,7 @@ func (a *API) GetURL(apiurl string) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	a.injectHeaders(r)
 	if a.UseBasicAuth {
 		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
 	}
@@ -79,6 +80,7 @@ func (a *API) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	a.injectHeaders(r)
 	r.Header.Set("Content-Type", "application/json")
 	if a.UseBasicAuth {
 		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
@@ -109,6 +111,7 @@ func (a *API) PostForm(apiurl string, data map[string]string) (APIResult, error)
 	if err != nil {
 		return res, err
 	}
+	a.injectHeaders(r)
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if a.UseBasicAuth {
 		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
@@ -143,6 +146,7 @@ func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	a.injectHeaders(r)
 	r.Header.Set("Content-Type", "application/json")
 	if a.UseBasicAuth {
 		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
@@ -172,6 +176,7 @@ func (a *API) DeleteURL(apiurl string) (APIResult, error) {
 	if err != nil {
 		return res, err
 	}
+	a.injectHeaders(r)
 	if a.UseBasicAuth {
 		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
 	}
@@ -186,6 +191,14 @@ func (a *API) DeleteURL(apiurl string) (APIResult, error) {
 		return getAPIResult(resp)
 	}
 	return getRawResult(resp), nil
+}
+
+func (a *API) injectHeaders(r *http.Request) {
+	if len(a.headers) > 0 {
+		for k, v := range a.headers {
+			r.Header.Set(k, v)
+		}
+	}
 }
 
 func getRawResult(resp *http.Response) APIResult {

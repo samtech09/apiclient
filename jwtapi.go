@@ -44,6 +44,7 @@ type JwtAPI struct {
 	ResourceAPIBaseURL string
 	logger             *log.Logger
 	StructuredResponse bool
+	headers            map[string]string
 }
 
 // //SJwtAPI allow to maek calls to JWT protected Structured APIs by setting Access-Token in request Authorization header.
@@ -105,6 +106,13 @@ func (j JwtAPI) GetTimeout() time.Duration {
 }
 func (j JwtAPI) GetBaseURL() string {
 	return j.ResourceAPIBaseURL
+}
+
+func (j *JwtAPI) SetHeaders(h map[string]string) {
+	j.headers = h
+}
+func (j *JwtAPI) ClearHeaders() {
+	j.headers = map[string]string{}
 }
 
 func (j JwtAPI) getClient() *http.Client {
@@ -337,6 +345,16 @@ callapi:
 	if err != nil {
 		return nil, err
 	}
+
+	//set custom headers if set
+	if len(j.headers) > 0 {
+		for k, v := range j.headers {
+
+			r.Header.Set(k, v)
+		}
+	}
+
+	//set mandatory headers
 	r.Header.Set("Authorization", "bearer "+j.GetToken().AccessToken)
 	r.Header.Set("Content-Type", "application/json")
 

@@ -31,6 +31,7 @@ type API struct {
 	BasicAuthUser      string
 	BasicAuthPwd       string
 	UseBasicAuth       bool
+	headers            map[string]string
 }
 
 // //SAPI - allow to make calls to Structured APIs using GET, POST, PUT, DELETE methods which itself return response as APIReuslt{}
@@ -56,6 +57,13 @@ func (j API) getClient() *http.Client {
 }
 func (j API) GetBaseURL() string {
 	return j.ResourceAPIBaseURL
+}
+
+func (j *API) SetHeaders(h map[string]string) {
+	j.headers = h
+}
+func (j *API) ClearHeaders() {
+	j.headers = map[string]string{}
 }
 
 func (j API) logMsg(methodname, format string, msg ...interface{}) {
