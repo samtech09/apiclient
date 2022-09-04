@@ -349,7 +349,6 @@ callapi:
 	//set custom headers if set
 	if len(j.headers) > 0 {
 		for k, v := range j.headers {
-
 			r.Header.Set(k, v)
 		}
 	}
@@ -384,15 +383,16 @@ callapi:
 		// }
 		// //DEBUG end
 
-		j.logDebug("makerequest", "Retrying API, got status: %d", resp.StatusCode)
-
 		if (retry < maxRetry) && (resp.StatusCode == http.StatusUnauthorized) {
+			j.logDebug("makerequest", "will retry API, got status: %d", resp.StatusCode)
 			resp.Body.Close()
 
-			retry++
 			j.requestTokenByRefreshToken(j.GetToken().RefreshToken)
 			// again try to call same API
+			retry++
 			goto callapi
+		} else {
+			j.logDebug("makerequest", "received not-ok status: %d", resp.StatusCode)
 		}
 	}
 	return resp, nil
