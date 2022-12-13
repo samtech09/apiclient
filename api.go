@@ -35,7 +35,7 @@ type API struct {
 }
 
 type RefreshRoutesInput struct {
-	ClientID     string `json:"clientid"`
+	VendorID     string `json:"vendorid"`
 	ApiServerURL string `json:"apiserverurl"`
 }
 
