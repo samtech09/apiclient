@@ -19,8 +19,8 @@ import (
 // 	logDebug(methodname, format string, msg ...interface{})
 // }
 
-//API - provide functions to call APIs using GET, POST, PUT, DELETE methods to any API. It will return RawReuslt{}.
-//API response will be read and set as string into RawResult.Data that client can parse.
+// API - provide functions to call APIs using GET, POST, PUT, DELETE methods to any API. It will return RawReuslt{}.
+// API response will be read and set as string into RawResult.Data that client can parse.
 type API struct {
 	AllowInsecureSSL   bool
 	Timeout            time.Duration
@@ -32,6 +32,11 @@ type API struct {
 	BasicAuthPwd       string
 	UseBasicAuth       bool
 	headers            map[string]string
+}
+
+type RefreshRoutesInput struct {
+	ClientID     string `json:"clientid"`
+	ApiServerURL string `json:"apiserverurl"`
 }
 
 // //SAPI - allow to make calls to Structured APIs using GET, POST, PUT, DELETE methods which itself return response as APIReuslt{}
