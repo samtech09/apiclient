@@ -34,11 +34,6 @@ type API struct {
 	headers            map[string]string
 }
 
-type RefreshRoutesInput struct {
-	VendorID     string `json:"vendorid"`
-	ApiServerURL string `json:"apiserverurl"`
-}
-
 // //SAPI - allow to make calls to Structured APIs using GET, POST, PUT, DELETE methods which itself return response as APIReuslt{}
 // type SAPI struct {
 // 	AllowInsecureSSL   bool
