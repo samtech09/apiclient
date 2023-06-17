@@ -32,7 +32,7 @@ var maxRetry = 2
 // 	//setToken(Token)
 // }
 
-//JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
+// JwtAPI provide functions to call JWT protected APIs by setting Access-Token in request Authorization header
 type JwtAPI struct {
 	TokenRequestData   TokenRequest
 	token              Token
@@ -61,7 +61,7 @@ type JwtAPI struct {
 // 	logger             *log.Logger
 // }
 
-//Token is returned after successfull request to token or refreshtoken endpoints
+// Token is returned after successfull request to token or refreshtoken endpoints
 type Token struct {
 	TokenType    string `json:"token_type"`
 	AccessToken  string `json:"access_token"`
@@ -69,7 +69,7 @@ type Token struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-//TokenRequest is used to pass credential to auth-server to get new token
+// TokenRequest is used to pass credential to auth-server to get new token
 type TokenRequest struct {
 	ClientID     string
 	ClientSecret string
@@ -78,7 +78,7 @@ type TokenRequest struct {
 	RefreshToken string
 }
 
-//RefreshToken is used to get New AccessToken
+// RefreshToken is used to get New AccessToken
 type refreshToken struct {
 	RefreshToken string
 }
@@ -220,7 +220,7 @@ func getClient(allowInsecureSSL bool, timeout time.Duration) *http.Client {
 func (j *JwtAPI) requestTokenByLogin() error {
 	var token Token
 
-	j.logMsg("RequestTokenByLogin", "%s", "Requesting new token through login")
+	j.logDebug("RequestTokenByLogin", "%s", "Requesting new token through login")
 	b := new(bytes.Buffer)
 	json.NewEncoder(b).Encode(j.GetTokenRequestData())
 
@@ -267,7 +267,7 @@ func (j *JwtAPI) requestTokenByLogin() error {
 func (j *JwtAPI) requestTokenByRefreshToken(rtoken string) error {
 	var token Token
 
-	j.logMsg("RequestTokenByRefreshToken", "Debug : %t", j.DebugEnabled())
+	j.logDebug("RequestTokenByRefreshToken", "Debug : %t", j.DebugEnabled())
 
 	//j.logDebug("RequestTokenByRefreshToken", "Requesting new token through refresh-token (%v)", rtoken)
 
@@ -328,7 +328,7 @@ func (j *JwtAPI) requestTokenByRefreshToken(rtoken string) error {
 	return nil
 }
 
-//makeRequest makes http request for given url with given method
+// makeRequest makes http request for given url with given method
 func (j *JwtAPI) makeRequest(method, apiurl string, body io.Reader) (*http.Response, error) {
 	retry := 0
 	connFailRetry := 0
@@ -398,7 +398,7 @@ callapi:
 	return resp, nil
 }
 
-//handleNotOK tried to read response from responses other than 200
+// handleNotOK tried to read response from responses other than 200
 // and populate ApiResult struct
 func handleNotOK(resp *http.Response) APIResult {
 	res := APIResult{}

@@ -33,6 +33,11 @@ func mockServer() {
 		}
 		json.NewEncoder(w).Encode(APIResult{Data: "protected-not-ok"})
 	})
+	http.HandleFunc("/protected-exp", func(w http.ResponseWriter, r *http.Request) {
+		//token := extractToken(r)
+		w.WriteHeader(http.StatusUnauthorized)
+		//json.NewEncoder(w).Encode(APIResult{Data: "protected-not-ok"})
+	})
 	wg.Add(1)
 	http.ListenAndServe(":8080", nil)
 	wg.Wait()
@@ -114,7 +119,7 @@ func TestGetToken(t *testing.T) {
 	jwtapi.TokenRequestData.ClientID = "test0-client"
 	jwtapi.TokenRequestData.ClientSecret = "123456678ABCCD"
 	jwtapi.TokenRequestData.Scopes = "user"
-	//jwtapi.Debug = true
+	jwtapi.Debug = true
 	token, err := jwtapi.RequestTokenByCred()
 	if err != nil {
 		t.Errorf("Get-Token error: %v\n", err)
@@ -139,6 +144,18 @@ func TestRequestTokenByRefreshToken(t *testing.T) {
 
 func TestProtectedWithJWT(t *testing.T) {
 	url := "/protected"
+	res, err := jwtapi.Get(url)
+	if err != nil {
+		t.Errorf("APIGet error: %v\n", err)
+	}
+	exp := "protected-ok"
+	if res.Data != exp {
+		t.Errorf("Expected: %s,  Got: %s", exp, res.Data)
+	}
+}
+
+func TestProtectedWithJWTExp(t *testing.T) {
+	url := "/protected-exp"
 	res, err := jwtapi.Get(url)
 	if err != nil {
 		t.Errorf("APIGet error: %v\n", err)
