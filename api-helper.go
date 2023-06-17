@@ -26,7 +26,7 @@ import (
 // 	return getRawResult(resp), nil
 // }
 
-//SetLogWriter Sets io.writer for logging to file
+// SetLogWriter Sets io.writer for logging to file
 func (a *API) SetLogWriter(w io.Writer) {
 	multi := io.MultiWriter(w, os.Stdout)
 	l := log.New(multi, "", log.LstdFlags)
@@ -34,12 +34,12 @@ func (a *API) SetLogWriter(w io.Writer) {
 	a.logger = l
 }
 
-//Get - make HTTP GET request to given api path and return RawResult{}.
+// Get - make HTTP GET request to given api path and return RawResult{}.
 func (a *API) Get(apipath string) (APIResult, error) {
 	return a.GetURL(a.GetBaseURL() + apipath)
 }
 
-//GetURL - make HTTP GET request to given url and return RawResult{}.
+// GetURL - make HTTP GET request to given url and return RawResult{}.
 func (a *API) GetURL(apiurl string) (APIResult, error) {
 	var res APIResult
 	r, err := http.NewRequest(http.MethodGet, apiurl, nil)
@@ -63,12 +63,12 @@ func (a *API) GetURL(apiurl string) (APIResult, error) {
 	return getRawResult(resp), nil
 }
 
-//Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (a *API) Post(apipath string, postdataJSON []byte) (APIResult, error) {
 	return a.PostURL(a.GetBaseURL()+apipath, postdataJSON)
 }
 
-//PostURL - make HTTP POST request to given url and post JSON data and return RawResult{}.
+// PostURL - make HTTP POST request to given url and post JSON data and return RawResult{}.
 func (a *API) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
 	var res APIResult
 	if postdataJSON == nil {
@@ -98,7 +98,7 @@ func (a *API) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
 	return getRawResult(resp), nil
 }
 
-//PostForm - make HTTP POST request to given url with content-type: application/x-www-form-urlencoded
+// PostForm - make HTTP POST request to given url with content-type: application/x-www-form-urlencoded
 func (a *API) PostForm(apiurl string, data map[string]string) (APIResult, error) {
 	var res APIResult
 
@@ -129,12 +129,12 @@ func (a *API) PostForm(apiurl string, data map[string]string) (APIResult, error)
 	return getRawResult(resp), nil
 }
 
-//Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (a *API) Put(apipath string, putdataJSON []byte) (APIResult, error) {
 	return a.PutURL(a.GetBaseURL()+apipath, putdataJSON)
 }
 
-//PutURL - make HTTP PUT request to given url and post JSON data and return RawResult{}.
+// PutURL - make HTTP PUT request to given url and post JSON data and return RawResult{}.
 func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	var res APIResult
 	if putdataJSON == nil {
@@ -164,12 +164,12 @@ func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	return getRawResult(resp), nil
 }
 
-//Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (a *API) Delete(apipath string) (APIResult, error) {
 	return a.DeleteURL(a.GetBaseURL() + apipath)
 }
 
-//DeleteURL - make HTTP DELETE request to given url and return RawResult{}.
+// DeleteURL - make HTTP DELETE request to given url and return RawResult{}.
 func (a *API) DeleteURL(apiurl string) (APIResult, error) {
 	var res APIResult
 	r, err := http.NewRequest(http.MethodDelete, apiurl, nil)

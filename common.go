@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-//APIResult is structured response returned from APIs developed by samtech09
+// APIResult is structured response returned from APIs developed by samtech09
 type APIResult struct {
 	HTTPStatus int
 	ErrCode    int
@@ -23,7 +23,7 @@ type APIResult struct {
 // 	Data string
 // }
 
-//toJSON convert given interface to JSON
+// toJSON convert given interface to JSON
 func toJSON(d interface{}) (*bytes.Buffer, error) {
 	data, err := json.Marshal(d)
 	if err != nil {
@@ -32,7 +32,7 @@ func toJSON(d interface{}) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(data), nil
 }
 
-//jsonStringToStruct convert JSON string to given struct
+// jsonStringToStruct convert JSON string to given struct
 func jsonStringToStruct(jsonstring string, dest interface{}) error {
 	if err := json.Unmarshal([]byte(jsonstring), dest); err != nil {
 		return err

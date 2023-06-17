@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-//SetLogWriter Sets io.writer for logging to file
+// SetLogWriter Sets io.writer for logging to file
 func (j *JwtAPI) SetLogWriter(w io.Writer) {
 	multi := io.MultiWriter(w, os.Stdout)
 	l := log.New(multi, "", log.LstdFlags)
@@ -19,8 +19,8 @@ func (j *JwtAPI) SetLogWriter(w io.Writer) {
 	j.logger = l
 }
 
-//RequestTokenByCred call Token endpoint to get new token by passing TokenRequest data.
-//It set token to JwtAPI instance for subsequent calls through same instance.
+// RequestTokenByCred call Token endpoint to get new token by passing TokenRequest data.
+// It set token to JwtAPI instance for subsequent calls through same instance.
 func (j *JwtAPI) RequestTokenByCred() (Token, error) {
 	err := j.requestTokenByLogin()
 	if err != nil {
@@ -30,8 +30,8 @@ func (j *JwtAPI) RequestTokenByCred() (Token, error) {
 	return j.GetToken(), nil
 }
 
-//RequestTokenByRefreshToken call Token endpoint to get new token by passing existing refresh-token.
-//It set token to JwtAPI instance for subsequent calls through same instance.
+// RequestTokenByRefreshToken call Token endpoint to get new token by passing existing refresh-token.
+// It set token to JwtAPI instance for subsequent calls through same instance.
 func (j *JwtAPI) RequestTokenByRefreshToken(rtoken string) (Token, error) {
 	err := j.requestTokenByRefreshToken(rtoken)
 	if err != nil {
@@ -42,12 +42,12 @@ func (j *JwtAPI) RequestTokenByRefreshToken(rtoken string) (Token, error) {
 	return j.GetToken(), nil
 }
 
-//Get - make HTTP GET request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Get - make HTTP GET request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (j *JwtAPI) Get(apipath string) (APIResult, error) {
 	return j.GetURL(j.GetBaseURL() + apipath)
 }
 
-//GetURL - call given apiurl with GET method, auto inject Authorization Header, returns RawResult{}.
+// GetURL - call given apiurl with GET method, auto inject Authorization Header, returns RawResult{}.
 func (j *JwtAPI) GetURL(apiurl string) (APIResult, error) {
 	var res APIResult
 	resp, err := j.makeRequest(http.MethodGet, apiurl, nil)
@@ -64,12 +64,12 @@ func (j *JwtAPI) GetURL(apiurl string) (APIResult, error) {
 	return getRawResultJWT(resp)
 }
 
-//Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Post - make HTTP POST request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (j *JwtAPI) Post(apipath string, postdataJSON []byte) (APIResult, error) {
 	return j.PostURL(j.GetBaseURL()+apipath, postdataJSON)
 }
 
-//PostURL - call given apiurl with POST method and pass data, auto inject Authorization Header, returns RawResult{}.
+// PostURL - call given apiurl with POST method and pass data, auto inject Authorization Header, returns RawResult{}.
 func (j *JwtAPI) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) {
 	var res APIResult
 	if postdataJSON == nil {
@@ -90,12 +90,12 @@ func (j *JwtAPI) PostURL(apiurl string, postdataJSON []byte) (APIResult, error) 
 	return getRawResultJWT(resp)
 }
 
-//Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Put - make HTTP PUT request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (j *JwtAPI) Put(apipath string, putdataJSON []byte) (APIResult, error) {
 	return j.PutURL(j.GetBaseURL()+apipath, putdataJSON)
 }
 
-//PutURL - call given apiurl with PUT method and pass data, auto inject Authorization Header, returns RawResult{}.
+// PutURL - call given apiurl with PUT method and pass data, auto inject Authorization Header, returns RawResult{}.
 func (j *JwtAPI) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	var res APIResult
 	if putdataJSON == nil {
@@ -116,12 +116,12 @@ func (j *JwtAPI) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	return getRawResultJWT(resp)
 }
 
-//Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
+// Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (j *JwtAPI) Delete(apipath string) (APIResult, error) {
 	return j.DeleteURL(j.GetBaseURL() + apipath)
 }
 
-//DeleteURL - call given apiurl with DELETE method, auto inject Authorization Header, returns RawResult{}.
+// DeleteURL - call given apiurl with DELETE method, auto inject Authorization Header, returns RawResult{}.
 func (j *JwtAPI) DeleteURL(apiurl string) (APIResult, error) {
 	var res APIResult
 	resp, err := j.makeRequest(http.MethodGet, apiurl, nil)
