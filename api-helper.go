@@ -164,6 +164,41 @@ func (a *API) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	return getRawResult(resp), nil
 }
 
+// Patch - make HTTP PATCH request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (a *API) Patch(apipath string, putdataJSON []byte) (APIResult, error) {
+	return a.PatchURL(a.GetBaseURL()+apipath, putdataJSON)
+}
+
+// PatchURL - make HTTP PATCH request to given url and post JSON data and return RawResult{}.
+func (a *API) PatchURL(apiurl string, patchdataJSON []byte) (APIResult, error) {
+	var res APIResult
+	if patchdataJSON == nil {
+		a.logMsg("APIPut", "patchdata is nil")
+		return res, fmt.Errorf("patchdata is nil")
+	}
+
+	r, err := http.NewRequest(http.MethodPatch, apiurl, bytes.NewBuffer(patchdataJSON))
+	if err != nil {
+		return res, err
+	}
+	a.injectHeaders(r)
+	r.Header.Set("Content-Type", "application/json")
+	if a.UseBasicAuth {
+		r.SetBasicAuth(a.BasicAuthUser, a.BasicAuthPwd)
+	}
+
+	client := a.getClient()
+	resp, err := client.Do(r)
+	if err != nil {
+		return res, err
+	}
+
+	if a.StructuredResponse {
+		return getAPIResult(resp)
+	}
+	return getRawResult(resp), nil
+}
+
 // Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (a *API) Delete(apipath string) (APIResult, error) {
 	return a.DeleteURL(a.GetBaseURL() + apipath)

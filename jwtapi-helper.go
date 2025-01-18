@@ -116,6 +116,32 @@ func (j *JwtAPI) PutURL(apiurl string, putdataJSON []byte) (APIResult, error) {
 	return getRawResultJWT(resp)
 }
 
+// Post - make HTTP PATCH request to given api path, post JSON data and return APIResult{}. ResourceAPIBaseURL will be prepended.
+func (j *JwtAPI) Patch(apipath string, patchdataJSON []byte) (APIResult, error) {
+	return j.PatchURL(j.GetBaseURL()+apipath, patchdataJSON)
+}
+
+// PostURL - call given apiurl with PATCH method and pass data, auto inject Authorization Header, returns RawResult{}.
+func (j *JwtAPI) PatchURL(apiurl string, patchdataJSON []byte) (APIResult, error) {
+	var res APIResult
+	if patchdataJSON == nil {
+		return res, fmt.Errorf("patchdata is nil")
+	}
+
+	resp, err := j.makeRequest(http.MethodPatch, apiurl, bytes.NewBuffer(patchdataJSON))
+	if err != nil {
+		if resp != nil {
+			resp.Body.Close()
+		}
+		return res, err
+	}
+
+	if j.StructuredResponse {
+		return getAPIResultJWT(resp)
+	}
+	return getRawResultJWT(resp)
+}
+
 // Delete - make HTTP DELETE request to given api path and return APIResult{}. ResourceAPIBaseURL will be prepended.
 func (j *JwtAPI) Delete(apipath string) (APIResult, error) {
 	return j.DeleteURL(j.GetBaseURL() + apipath)
